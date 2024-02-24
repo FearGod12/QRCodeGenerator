@@ -10,6 +10,7 @@ CREATE TABLE QRCode (
     data TEXT NOT NULL,
     metadata JSONB,
     generated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    qr_code_img BYTEA
 );
 
 /*
@@ -33,4 +34,5 @@ Columns:
 - data: The data encoded in the QR code. It is stored as TEXT.
 - metadata: Additional metadata associated with the QR code, stored as JSONB (binary JSON).
 - generated_at: The timestamp indicating when the QR code was generated. Defaults to the current timestamp when a new record is inserted into the table.
+- qr_code_image: A column for the qrcode image
 */
