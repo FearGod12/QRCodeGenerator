@@ -1,0 +1,6 @@
+pydantic
+flask
+flask_cors
+psycopg2
+qrcode
+pydantic[email]
