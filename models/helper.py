@@ -10,13 +10,13 @@ from pydantic import BaseModel
 # """
 
 
-# class User(BaseModel):
-#     user_name:str
-#     personal_website : str = None
-#     phone_number : int
-#     email_address: str
-#     employee_id: str
-#     employee_uuid: str = None
+class User(BaseModel):
+    user_name:str
+    personal_website : str = None
+    phone_number : int
+    email_address: str
+    employee_id: str
+    employee_uuid: str = None
     
 
 
