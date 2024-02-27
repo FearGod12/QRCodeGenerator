@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import uuid0
 import qrcode
 from pydantic import BaseModel, ValidationError
 from io import BytesIO
