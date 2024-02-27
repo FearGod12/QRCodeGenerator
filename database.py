@@ -2,11 +2,13 @@
 """Contains the database connection and all communication with the database"""
 import psycopg2
 
-params = {"host" :"localhost",
+params = {
+    "host" :"localhost",
           "port" : 5432,
         "database" : "qrcodes",
         "user" :"postgres",
-        "password": "****"}
+        "password": "postgres"
+        }
 
 
 def connect():
@@ -17,18 +19,29 @@ def connect():
     Returns the database connection object on success."""
     try:
         # connecting to the PostgreSQL server        
-        with psycopg2.connect(**params) as conn:
-            print('Connected to the PostgreSQL server.')
-            conn.execute("""
-            CREATE TABLE IF NOT EXISTS qrcode(
-            id BIGSERIAL PRIMARY KEY,
-            employee_name VARCHAR,
-            personal_website VARCHAR,
-            phone_number INT,
-            email_address VARCHAR,
-            qr_image VARCHAR) 
-            """)
-            # TODO qr_image from VARCHAR BYTEA
-            return conn
+        conn =  psycopg2.connect(**params)
+        print('Connected to the PostgreSQL server.')
+        
+        cur = conn.cursor()
+        
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS qrcode(
+        id BIGSERIAL PRIMARY KEY,
+        employee_name VARCHAR,
+        personal_website VARCHAR,
+        phone_number VARCHAR(20),
+        email_address VARCHAR,
+        qr_image BYTEA) 
+        """)
+        
+        conn.commit()
+        
+        cur.close()
+        # TODO qr_image from VARCHAR BYTEA
+        return conn
     except (psycopg2.DatabaseError, Exception) as error:
         print(error)
+ 
+
+if __name__ == "__main__":
+    connect()

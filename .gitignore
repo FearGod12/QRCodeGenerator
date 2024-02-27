@@ -1,2 +1,5 @@
 database.ini
 config.py
+myenv
+__pycache__
+*.png

@@ -1,6 +1,7 @@
-import uuid0
+import os
+import uuid
 import qrcode
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel, ValidationError, EmailStr, HttpUrl
 from io import BytesIO
 
 # """Generates a UUID for an employee and creates a QR code encoding their name, 
@@ -13,19 +14,16 @@ from io import BytesIO
 
 
 class User(BaseModel):
-    user_name:str
-    personal_website : str = None
-    phone_number : int
-    email_address: str
+    name: str
     employee_id: str = None
-    employee_uuid: str = None
+    personal_website : str = None
+    phone_number : str
+    email_address: str = None
     
 
 #TODO add encryption for sensitive data
-def generate_uuid(input_data:dict) -> str:
-    user_details = input_data
-    uuid = str(uuid0.generate())
-    return uuid
+def generate_uuid() -> str:
+    return str(uuid.uuid4())
 
 
 def generate_qr_code(**data:dict) -> str:
@@ -33,16 +31,26 @@ def generate_qr_code(**data:dict) -> str:
     #TODO check what data type is data
     try:
         employee_information = User(**data)
-        # employee_uuid = generate_uuid(employee_information)
-        # employee_information.employee_uuid = employee_uuid
-        #TODO change the make function to customizable
-        img = qrcode.make(employee_information)
-        filename = "{}_{}.png".format( employee_information.user_name, employee_information.employee_uuid) 
-        img.save(filename)
-        return filename, employee_information
+        employee_information.employee_id = generate_uuid()
+        
+        qr_data = employee_information.json()
+        
+        # Create a folder to save the QR codes generated
+        folder_path = "qr_codes"
+        os.makedirs(folder_path, exist_ok=True)
+        
+        # Make the file name unique in the format `name_uuid`
+        filename = f"{employee_information.name}_{employee_information.employee_id}.png"
+        filepath = os.path.join(folder_path, filename)
+        
+        img = qrcode.make(qr_data)
+        img.save(filepath)
+        print("Success, the file name is: " + filename)
+        return filepath, employee_information
     
     except ValidationError as e:
-        return e
+        print("Validation Error occured: " + str(e))
+        raise
         
 
 # info = {
