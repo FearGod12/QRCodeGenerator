@@ -40,6 +40,19 @@ def upload(img_bytes, employee_information):
     except (Exception, psycopg2.Error) as error:
         print("Error inserting QR code into database:", error)
         connection.rollback()
-    finally:
-        # Close cursor and communication with the database
-        cur.close()
+
+def fetch_qr_code(database_id: int):
+    """fetches a qr_code from db"""
+    query = f"""SELECT qr_image FROM qrcode WHERE id={database_id}"""
+    cur.execute(query)    
+    result = cur.fetchone()
+    return result
+
+def fetch_user(database_id):
+    """fetches info about the user with the id"""
+    query = f"""SELECT employee_name, personal_website, phone_number, email_address FROM qrcode WHERE id={database_id}"""
+    cur.execute(query)
+    result = cur.fetchone()
+    return result
+
+    return result
