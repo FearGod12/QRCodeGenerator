@@ -1,34 +1,45 @@
-#!/usr/bin/env python 
-"""Contains the database connection and all communication with the database"""
 import psycopg2
 
-params = {"host" :"localhost",
-          "port" : 5432,
-        "database" : "qrcodes",
-        "user" :"postgres",
-        "password": "****"}
-
+params = {
+    "host": "localhost",
+    "port": 5432,
+    "database": "BetaKopa_qrcodes",
+    "user": "postgres",
+    "password": "Chuks123."
+}
 
 def connect():
     """
     Connects to a PostgreSQL database using the provided configuration.
-
     Prints a message indicating whether the connection was successful.
-    Returns the database connection object on success."""
+    Returns the database connection object on success.
+    """
     try:
-        # connecting to the PostgreSQL server        
-        with psycopg2.connect(**params) as conn:
-            print('Connected to the PostgreSQL server.')
-            conn.execute("""
+        # connecting to the PostgreSQL server
+        conn = psycopg2.connect(**params)
+        print('Connected to the PostgreSQL server.')
+        
+        # Create a cursor object
+        cursor = conn.cursor()
+        
+        # Execute the SQL query to create the table
+        cursor.execute("""
             CREATE TABLE IF NOT EXISTS qrcode(
-            id BIGSERIAL PRIMARY KEY,
-            employee_name VARCHAR,
-            personal_website VARCHAR,
-            phone_number INT,
-            email_address VARCHAR,
-            qr_image VARCHAR) 
-            """)
-            # TODO qr_image from VARCHAR BYTEA
-            return conn
+                id SERIAL PRIMARY KEY,
+                employee_name VARCHAR,
+                personal_website VARCHAR,
+                phone_number INT,
+                email_address VARCHAR,
+                qr_image BYTEA
+            )
+        """)
+        
+        # Commit the transaction
+        conn.commit()
+        
+        # Close the cursor
+        cursor.close()
+        
+        return conn
     except (psycopg2.DatabaseError, Exception) as error:
         print(error)

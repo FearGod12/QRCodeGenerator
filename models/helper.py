@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import uuid0
 import qrcode
 from pydantic import BaseModel, ValidationError
@@ -13,7 +14,7 @@ from io import BytesIO
 
 
 class User(BaseModel):
-    user_name:str
+    employee_name: str
     personal_website : str = None
     phone_number : int
     email_address: str
@@ -27,31 +28,31 @@ def generate_uuid(input_data:dict) -> str:
     uuid = str(uuid0.generate())
     return uuid
 
-
-def generate_qr_code(**data:dict) -> str:
-    "This function creates and save our qrcode information"
-    #TODO check what data type is data
+def generate_qr_code(data: dict) -> bytes:
+    """
+    This function generates a QR code image based on the provided data and customization options.
+    :param data: A dictionary containing the data to be encoded and customization options.
+    :return: Bytes data of the generated QR code image.
+    """
     try:
-        employee_information = User(**data)
-        # employee_uuid = generate_uuid(employee_information)
-        # employee_information.employee_uuid = employee_uuid
-        #TODO change the make function to customizable
-        img = qrcode.make(employee_information)
-        filename = "{}_{}.png".format( employee_information.user_name, employee_information.employee_uuid) 
-        img.save(filename)
-        return filename, employee_information
-    
+        employee_information = User(**data["employee_information"])
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,  # Error correction level: L, M, Q, H
+            box_size=data["qr_data"].get('box_size', 10),  # Size of each box in the QR code
+            border=data["qr_data"].get('border', 4),  # Size of the border around the QR code
+        )
+        qr.add_data(data["qr_data"]["data_to_be_encoded"])
+        qr.make(fit=True)
+
+        img_buffer = BytesIO()
+
+        img = qr.make_image(fill_color=data["qr_data"].get('fill_color', 'black'), back_color=data["qr_data"].get('back_color', 'white'))
+        img.save("qr_code.png")
+        img.save(img_buffer, 'PNG')
+        img_buffer.seek(0)
+
+        img_bytes = img_buffer.getvalue()
+        return img_bytes, employee_information
     except ValidationError as e:
-        return e
-        
-
-# info = {
-#     "user_name": "Fred",
-#     "personal_website" : 1,
-#     "phone_number" : "07042802954",
-#     "email_address": "jlsdjnpsoiq",
-#     "employee_id": "123444"
-    
-# }
-
-# print(generate_qr_code(**info))
+        raise ValueError(f"Validation error: {e}")

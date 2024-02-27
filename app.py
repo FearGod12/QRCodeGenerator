@@ -12,32 +12,51 @@ The '/save_to_db' endpoint takes a JSON payload and saves it to the database aft
 
 """Contains the flask app"""
 
-from flask import Flask, request, response
-from models.helper import User, generate_qr_code
+from flask import Flask, request, jsonify
+from models.helper import generate_qr_code
 from upload import upload
 
 app = Flask(__name__)
 
+SAMPLE_DATA = {"qr_data":
+               {"data_to_be_encoded": "https://google.com",
+                "box_size": 10,
+                "border": 4,
+                "fill_color": "red",
+                "back_color": "white"},
+               "employee_information":
+               {"employee_name": "TechJourneyMan",
+                "phone_number" : 1234567,
+                "email_address": "onyenikechukwudi@gmail.com"
+                }}
 @app.route("/", methods=['GET'], strict_slashes=False)
 def home():
     """home route"""
-    return "hello world"
+    return "Hello, world!"
 
 @app.route("/create_qr_code", methods=["POST"], strict_slashes=False)
 def submit():
     """Expects a json data, creates the qr_code, save it in the db"""
-    data = request.get_json(silent=True)
-    filename, employee_information = generate_qr_code(**data)
-    upload(filename, employee_information)
-
+    try:
+        data = request.get_json(silent=True)
+        img_bytes, employee_information = generate_qr_code(data)
+        result = upload(img_bytes, employee_information)
+        print(result)
+        return jsonify({"Success": "QR code generated and saved successfully", "id": f"{result}"}), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 @app.route("/fetch_qr_code/<database_id>", methods=["GET"], strict_slashes=False)
 def get_code(database_id):
     """fetches the qr_code from the database"""
-    # TODO create a function that fetch a particular qrcode using the id 
-    result = get_code(database_id)
-    
+    try:
+        qr_code = fetch_qr_code(database_id)
+        if qr_code:
+            return send_file(qr_code, mimetype='image/png')
+        else:
+            return jsonify({"error": "QR code not found"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=3001)
-
+    app.run(host="0.0.0.0", port=3001, debug=True)
