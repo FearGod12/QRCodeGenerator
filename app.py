@@ -36,7 +36,6 @@ SAMPLE_DATA = {"qr_data":
 
 @app.route("/", methods=['GET'], strict_slashes=False)
 def home():
-    """home route"""
     return "Hello, world!"
 
 @app.route("/create_qr_code", methods=["POST"], strict_slashes=False)
@@ -68,9 +67,14 @@ def get_code(database_id):
 def get_user(database_id):
     """fetches a user data as json"""
     result = fetch_user(database_id)
-    if result:  # TODO RETURN A JSON INSTEAD OF A SET
+    if result:
         return jsonify(result), 200
     return jsonify({"User not found"}), 404
+
+@app.route("/fetch_all_users", methods=["GET"], strict_slashes=False)
+def get_all_users():
+    """fetches all users in the database"""
+    return jsonify({"error": "Not yet implemented"}), 501
 
 
 if __name__ == "__main__":
