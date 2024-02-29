@@ -69,7 +69,8 @@ def get_user(database_id):
     result = fetch_user(database_id)
     if result:
         return jsonify(result), 200
-    return jsonify({"User not found"}), 404
+    return abort(404, "User not found")
+
 
 @app.route("/fetch_all_users", methods=["GET"], strict_slashes=False)
 def get_all_users():

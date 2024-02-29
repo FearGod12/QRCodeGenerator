@@ -24,7 +24,7 @@ CREATE DATABASE qrcode_db;
 ### Run database setup script
 
 ```
-python upload_and_fetch.py
+python database.py
 ```
 
 This will create the necessary tables.
@@ -88,9 +88,9 @@ Status Code: 200
 {image/png data}
 ```
 
-### GET /get_employee_data/:id
+### GET /fetch_user/:id
 
-Retrieves employee data associated with a QR code id.
+Retrieves user data associated with a QR code id.
 
 **Response:**
 
@@ -108,7 +108,7 @@ Status Code: 200
 
 ## Endpoints
 
-### `GET /fetch_qr_code`
+### `GET /fetch_qr_code/<:id>`
 
 Fetches a QR code image from the database.
 
@@ -116,9 +116,9 @@ Fetches a QR code image from the database.
 
 QR code image with content-type "image/png"
 
-### `GET /fetch_user`
+### `GET /fetch_user/<:id>`
 
-Fetches user information associated with a QR code.
+Fetches user information associated with a QR code id.
 
 **Request:**
 
@@ -159,63 +159,5 @@ Fetches information of all users.
   }
 ]
 ```
-
-### `POST /create_user`
-
-Creates a new user.
-
-**Request:**
-
-```json
-{
-  "employee_name": "Jane Doe",
-  "phone_number": 987654321,
-  "email_address": "jane@example.com"
-}
-```
-
-**Response:**
-
-```json
-{
-  "id": 2,
-  "employee_name": "Jane Doe",
-  "phone_number": 987654321,
-  "email_address": "jane@example.com"
-}
-```
-
-Status Code: 201
-
-### `PUT /update_user/:id`
-
-Updates an existing user.
-
-**Request:**
-
-```json
-{
-  "employee_name": "Jane Smith",
-  "phone_number": 123456789,
-  "email_address": "jane.smith@example.com"
-}
-```
-
-**Response:**
-
-```json
-{
-  "id": 2,
-  "employee_name": "Jane Smith",
-  "phone_number": 123456789,
-  "email_address": "jane.smith@example.com"
-}
-```
-
-Status Code: 200
-
-### `DELETE /delete_user/:id`
-
-Deletes a user.
 
 \*\*
