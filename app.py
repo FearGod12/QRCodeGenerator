@@ -12,7 +12,7 @@ The '/save_to_db' endpoint takes a JSON payload and saves it to the database aft
 
 """Contains the flask app"""
 from io import BytesIO
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify, send_file, abort
 
 from models.helper import generate_qr_code
 # import the upload function automatically executes the fucntion which sets up the database
@@ -56,12 +56,11 @@ def get_code(database_id):
     """fetches the qr_code from the database"""
     try:
         qr_code = fetch_qr_code(database_id)
-        if qr_code:
-            img_buffer = BytesIO(qr_code)
-            print(type(img_buffer))
-            return send_file(img_buffer, mimetype='image/png')
-        else:
-            return jsonify({"error": "QR code not found"}), 404
+        if qr_code is None:
+            abort(404, "QR code not found")
+        img_buffer = BytesIO(qr_code)
+        return send_file(img_buffer, mimetype='image/png', as_attachment=True, download_name='qrcode.png')
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
@@ -70,7 +69,7 @@ def get_user(database_id):
     """fetches a user data as json"""
     result = fetch_user(database_id)
     if result:  # TODO RETURN A JSON INSTEAD OF A SET
-        return jsonify({result}), 200
+        return jsonify(result), 200
     return jsonify({"User not found"}), 404
 
 
