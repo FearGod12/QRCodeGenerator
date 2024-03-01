@@ -46,13 +46,17 @@ def fetch_qr_code(database_id: int):
     query = f"""SELECT qr_image FROM qrcode WHERE id={database_id}"""
     cur.execute(query)    
     result = cur.fetchone()
-    return result
+    if result:
+        return result[0].tobytes()
+    return None
 
 def fetch_user(database_id):
     """fetches info about the user with the id"""
     query = f"""SELECT employee_name, personal_website, phone_number, email_address FROM qrcode WHERE id={database_id}"""
     cur.execute(query)
     result = cur.fetchone()
-    return result
-
+    if result:
+        columns = [column[0] for column in cur.description]
+        user_data = dict(zip(columns, result))
+        return user_data
     return result
