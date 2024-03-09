@@ -26,10 +26,10 @@ def connect():
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS qrcode(
                 id SERIAL PRIMARY KEY,
-                employee_name VARCHAR,
-                personal_website VARCHAR,
-                phone_number INT,
-                email_address VARCHAR,
+                employee_name VARCHAR(255),
+                personal_website VARCHAR(255),
+                phone_number VARCHAR(20),
+                email_address VARCHAR(255),
                 qr_image BYTEA
             )
         """)
